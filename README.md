@@ -1,5 +1,14 @@
-# My Coding Playground
-Welcome to my digital workshop! This repository is where creativity meets code – a collection of experimental projects, learning adventures, and random bursts of inspiration.
+<p align="center">
+  <img src="banner.jpg" alt="My Coding Playground Banner" width="80%%" />
+</p>
+
+<div align="center">
+
+# Welcome to my digital workshop!  
+This repository is where creativity meets code – a collection of experimental projects, learning adventures, and random bursts of inspiration.  
+
+</div>
+
 
 ## 🎯 What You'll Find Here
 
