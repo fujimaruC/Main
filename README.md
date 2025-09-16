@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="banner.jpg" alt="My Coding Playground Banner" width="80%%" />
+  <img src="banner.jpg" alt="My Coding Playground Banner" width="90%%" />
 </p>
 
 <div align="center">
