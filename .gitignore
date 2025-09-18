@@ -1,0 +1,10 @@
+# node / python / sistem
+node_modules/
+portofolio-web/node_modules/
+portofolio-web/build/
+data-list-app/node_modules/
+__pycache__/
+*.pyc
+.env
+.DS_Store
+npm-debug.log

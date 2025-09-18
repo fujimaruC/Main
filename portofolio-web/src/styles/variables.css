@@ -1,0 +1,44 @@
+:root {
+  /* Light Theme (Soft Chocolate) */
+  --primary-light: #a67c52;
+  --primary-light-hover: #94704a;
+  --secondary-light: #d4b996;
+  --text-light: #4a3728;
+  --bg-light: #f5f0eb;
+  --card-light: #ffffff;
+  --border-light: #e6dfd7;
+
+  /* Dark Theme */
+  --primary-dark: #c19a6b;
+  --primary-dark-hover: #d4ad78;
+  --secondary-dark: #7d5a38;
+  --text-dark: #e6dfd7;
+  --bg-dark: #1c1815;
+  --card-dark: #2d2520;
+  --border-dark: #3d3229;
+
+  /* Shared */
+  --transition-speed: 0.3s;
+  --border-radius: 8px;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+body {
+  --primary: var(--primary-light);
+  --primary-hover: var(--primary-light-hover);
+  --secondary: var(--secondary-light);
+  --text: var(--text-light);
+  --bg: var(--bg-light);
+  --card: var(--card-light);
+  --border: var(--border-light);
+}
+
+body.dark-theme {
+  --primary: var(--primary-dark);
+  --primary-hover: var(--primary-dark-hover);
+  --secondary: var(--secondary-dark);
+  --text: var(--text-dark);
+  --bg: var(--bg-dark);
+  --card: var(--card-dark);
+  --border: var(--border-dark);
+}
