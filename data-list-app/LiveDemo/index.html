@@ -1,1 +1,849 @@
-TUT
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Data Manager — Modern</title>
+    <style>
+      :root {
+        --bg: #0f1724;
+        --card: #0b1220;
+        --gold: #d4af37;
+        --muted: #9aa4b2;
+        --accent: #0ea5a4;
+        --glass: rgba(255, 255, 255, 0.03);
+        --radius: 14px;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+          Roboto, "Helvetica Neue", Arial;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        background: linear-gradient(180deg, #06121a 0%, #071827 60%);
+        color: #e6eef6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        padding: 28px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 20px;
+        font-size: 14px;
+      }
+      .app {
+        width: 1100px;
+        max-width: 96vw;
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        gap: 20px;
+      }
+      .panel {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.01)
+        );
+        border-radius: var(--radius);
+        padding: 18px;
+        box-shadow: 0 6px 30px rgba(2, 6, 23, 0.6);
+      }
+      .header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .logo {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        background: linear-gradient(
+          135deg,
+          rgba(212, 175, 55, 0.18),
+          rgba(212, 175, 55, 0.06)
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(212, 175, 55, 0.14);
+      }
+      .title {
+        font-weight: 700;
+        letter-spacing: 0.2px;
+        font-size: 16px;
+        color: var(--gold);
+      }
+      .sub {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .controls {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: var(--glass);
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        cursor: pointer;
+        color: var(--gold);
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .btn.secondary {
+        color: var(--muted);
+        border: 1px dashed rgba(255, 255, 255, 0.02);
+      }
+      .form-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        background: transparent;
+        color: inherit;
+        outline: none;
+      }
+      .small {
+        width: 120px;
+      }
+      .search {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .file-list {
+        margin-top: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 220px;
+        overflow: auto;
+        padding-right: 6px;
+      }
+      .file-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px;
+        border-radius: 10px;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.01),
+          transparent
+        );
+        border: 1px solid rgba(255, 255, 255, 0.02);
+      }
+      .main {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .card {
+        padding: 14px;
+        border-radius: 14px;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.015),
+          rgba(255, 255, 255, 0.01)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.02);
+      }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+      }
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 8px;
+      }
+      .table th {
+        font-weight: 700;
+        text-align: left;
+        padding: 10px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .table td {
+        padding: 12px;
+        border-top: 1px dashed rgba(255, 255, 255, 0.02);
+        vertical-align: middle;
+      }
+      .row-actions {
+        display: flex;
+        gap: 8px;
+      }
+      .data-row {
+        border-radius: 10px;
+      }
+      .status-badge {
+        padding: 6px 8px;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 12px;
+        color: #081318;
+      }
+      .status-pending {
+        background: linear-gradient(
+          90deg,
+          rgba(212, 175, 55, 0.12),
+          rgba(212, 175, 55, 0.06)
+        );
+        color: var(--gold);
+      }
+      .status-done {
+        background: linear-gradient(
+          90deg,
+          rgba(14, 165, 164, 0.12),
+          rgba(14, 165, 164, 0.06)
+        );
+        color: var(--accent);
+      }
+      .kv {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+      }
+      .footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .icon {
+        width: 18px;
+        height: 18px;
+        display: inline-block;
+      }
+      .small-icon {
+        width: 14px;
+        height: 14px;
+      }
+      .hero {
+        background: linear-gradient(
+          90deg,
+          rgba(212, 175, 55, 0.06),
+          rgba(212, 175, 55, 0.02)
+        );
+        border: 1px solid rgba(212, 175, 55, 0.08);
+        padding: 12px;
+        border-radius: 12px;
+        color: var(--gold);
+        font-weight: 700;
+      }
+      .empty {
+        opacity: 0.6;
+        text-align: center;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px dashed rgba(255, 255, 255, 0.02);
+      }
+      @media (max-width: 980px) {
+        .app {
+          grid-template-columns: 1fr;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div class="panel">
+        <div class="header">
+          <div class="logo">
+            <svg
+              viewBox="0 0 24 24"
+              width="28"
+              height="28"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="4" fill="url(#g)" />
+              <defs>
+                <linearGradient id="g" x1="0" x2="1">
+                  <stop offset="0" stop-color="#ffd97a" />
+                  <stop offset="1" stop-color="#d4af37" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <div>
+            <div class="title">Data Manager</div>
+            <div class="sub">Simpan data & ekspor • warna gold</div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="card">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <div style="font-weight: 700">Tambah Data</div>
+              <div class="kv">
+                File aktif:
+                <strong
+                  id="activeFile"
+                  style="margin-left: 8px; color: var(--gold)"
+                  >Data-April.txt</strong
+                >
+              </div>
+            </div>
+            <div
+              style="
+                margin-top: 10px;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+              "
+            >
+              <input id="tanggal" class="input" placeholder="Tanggal (1 Jan)" />
+              <input
+                id="deadline"
+                class="input"
+                placeholder="Deadline (4 Jan)"
+              />
+              <input id="namaIg" class="input" placeholder="Nama IG" />
+              <input id="joki" class="input" placeholder="Joki" />
+              <input id="worker" class="input" placeholder="Worker" />
+              <input
+                id="hargaJoki"
+                class="input"
+                placeholder="Harga Joki (contoh: 160000)"
+              />
+              <input id="uangMasuk" class="input" placeholder="Uang Masuk" />
+              <input id="bayarVia" class="input" placeholder="Bayar Via" />
+              <select id="statusData" class="input">
+                <option value="Pending">Pending</option>
+                <option value="Selesai">Selesai</option>
+                <option value="On Progress">On Progress</option>
+              </select>
+            </div>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                margin-top: 10px;
+              "
+            >
+              <button id="addBtn" class="btn">
+                <svg class="icon" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M12 5v14M5 12h14"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  /></svg
+                >Tambah
+              </button>
+              <div style="display: flex; gap: 8px">
+                <button id="exportCsv" class="btn secondary">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M12 3v12"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    /></svg
+                  >Export CSV
+                </button>
+                <button id="downloadTxt" class="btn">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M12 3v12M5 21h14"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    /></svg
+                  >Download .txt
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <div style="font-weight: 700">Manajemen File</div>
+              <div class="kv">Simpan lokal → gunakan browser</div>
+            </div>
+            <div style="margin-top: 10px; display: flex; gap: 8px">
+              <input
+                id="newFileName"
+                class="input"
+                placeholder="Nama file baru (contoh: Data-May.txt)"
+              />
+              <button id="createFile" class="btn">
+                <svg class="icon" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M3 7h18M7 3v4"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  /></svg
+                >Buat
+              </button>
+            </div>
+            <div style="margin-top: 10px" class="file-list" id="fileList"></div>
+            <div style="display: flex; gap: 8px; margin-top: 8px">
+              <button id="importBtn" class="btn secondary">
+                <svg class="icon" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M12 3v12M5 21h14"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  /></svg
+                >Impor .txt
+              </button>
+              <button id="copyFileBtn" class="btn">
+                <svg class="icon" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M9 11V7a2 2 0 0 1 2-2h6v10"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  /></svg
+                >Copy ke File
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel main">
+        <div class="card topbar">
+          <div style="display: flex; flex-direction: column">
+            <div style="font-weight: 800; font-size: 18px">Daftar Data</div>
+            <div style="color: var(--muted); margin-top: 6px">
+              Urut berdasarkan tanggal (format: 1 Jan)
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px">
+            <div class="search">
+              <input
+                id="searchInput"
+                class="input"
+                placeholder="Cari worker..."
+              />
+            </div>
+            <button id="searchBtn" class="btn secondary">Cari</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="hero">
+            Ringkasan • Total data:
+            <span
+              id="totalData"
+              style="margin-left: 8px; font-weight: 800; color: var(--gold)"
+              >0</span
+            >
+          </div>
+          <table class="table" id="dataTable">
+            <thead>
+              <tr>
+                <th>Nomor</th>
+                <th>Tanggal</th>
+                <th>Deadline</th>
+                <th>Nama</th>
+                <th>Joki</th>
+                <th>Worker</th>
+                <th>Harga Joki</th>
+                <th>Gaji Worker</th>
+                <th>Uang Masuk</th>
+                <th>Bayar Via</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="dataBody"></tbody>
+          </table>
+          <div class="footer">
+            <div>Tip: klik ikon edit untuk ubah field</div>
+            <div id="storageInfo"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <input id="fileInput" type="file" accept=".txt" style="display: none" />
+    <script>
+      const DEFAULT = "Data-April.txt";
+      let activeFile = DEFAULT;
+      const monthMap = {
+        jan: 0,
+        feb: 1,
+        mar: 2,
+        apr: 3,
+        may: 4,
+        jun: 5,
+        jul: 6,
+        aug: 7,
+        sep: 8,
+        oct: 9,
+        nov: 10,
+        dec: 11,
+      };
+      function loadFiles() {
+        const raw = localStorage.getItem("dataFiles");
+        return raw ? JSON.parse(raw) : { [DEFAULT]: [] };
+      }
+      function saveFiles(obj) {
+        localStorage.setItem("dataFiles", JSON.stringify(obj));
+      }
+      function ensure() {
+        const files = loadFiles();
+        if (!files[DEFAULT]) files[DEFAULT] = [];
+        saveFiles(files);
+      }
+      ensure();
+      function renderFileList() {
+        const files = loadFiles();
+        const container = document.getElementById("fileList");
+        container.innerHTML = "";
+        Object.keys(files).forEach((fn) => {
+          const el = document.createElement("div");
+          el.className = "file-item";
+          const left = document.createElement("div");
+          left.innerHTML = `<strong style="color:${ 
+            fn === activeFile ? "var(--gold)" : "inherit"
+          }">${fn}</strong><div class="sub" style="margin-top:4px">
+            ${files[fn].length} baris</div>`;
+          const right = document.createElement("div");
+          right.style.display = "flex";
+          right.style.gap = "8px";
+          const btnSelect = document.createElement("button");
+          btnSelect.className = "btn secondary small-icon";
+          btnSelect.innerHTML =
+            '<svg class="small-icon" viewBox="0 0 24 24" fill="none"><path d="M5 12h14" stroke="currentColor" stroke-width="2"/></svg>';
+          btnSelect.onclick = () => {
+            activeFile = fn;
+            document.getElementById("activeFile").textContent = activeFile;
+            renderData();
+            renderFileList();
+          };
+          const btnDelete = document.createElement("button");
+          btnDelete.className = "btn secondary small-icon";
+          btnDelete.innerHTML =
+            '<svg class="small-icon" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6v12a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6" stroke="currentColor" stroke-width="2"/></svg>';
+          btnDelete.onclick = () => {
+            const filesObj = loadFiles();
+            if (fn === activeFile) {
+              alert("Tidak bisa hapus file aktif");
+              return;
+            }
+            delete filesObj[fn];
+            saveFiles(filesObj);
+            renderFileList();
+            renderData();
+          };
+          const btnDownload = document.createElement("button");
+          btnDownload.className = "btn";
+          btnDownload.innerHTML =
+            '<svg class="small-icon" viewBox="0 0 24 24" fill="none"><path d="M12 3v12M5 21h14" stroke="currentColor" stroke-width="2"/></svg>';
+          btnDownload.onclick = () => {
+            downloadTxt(fn);
+          };
+          right.append(btnSelect, btnDownload, btnDelete);
+          el.append(left, right);
+          container.appendChild(el);
+        });
+      }
+      function createFile(name) {
+        if (!name) return alert("Masukkan nama file");
+        if (!name.endsWith(".txt")) name = name + ".txt";
+        const files = loadFiles();
+        if (files[name]) return alert("File sudah ada");
+        files[name] = [];
+        saveFiles(files);
+        activeFile = name;
+        document.getElementById("activeFile").textContent = activeFile;
+        renderFileList();
+        renderData();
+      }
+      function downloadTxt(name) {
+        const files = loadFiles();
+        const rows = files[name] || [];
+        const blob = new Blob([rows.join("\n")], { type: "text/plain" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = name;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+      function addDataEntry(data) {
+        const files = loadFiles();
+        if (!files[activeFile]) files[activeFile] = [];
+        files[activeFile].push(data);
+        saveFiles(files);
+        renderData();
+        renderFileList();
+      }
+      function parseDateStr(s) {
+        if (!s) return new Date(0);
+        const parts = s.trim().split(/\s+/);
+        const d = parseInt(parts[0]) || 1;
+        const m = (parts[1] || "").toLowerCase().slice(0, 3);
+        const mm = monthMap[m] !== undefined ? monthMap[m] : 0;
+        return new Date(new Date().getFullYear(), mm, d);
+      }
+      function computeGaji(harga) {
+        const h = Number(harga) || 0;
+        const pot = h < 100000 ? 0.25 : 0.3;
+        return Math.round((h - h * pot) * 100) / 100;
+      }
+      function renderData(filterWorker) {
+        const files = loadFiles();
+        const rows = files[activeFile] || [];
+        const parsed = rows
+          .map((r) => {
+            const parts = r.split("|");
+            return parts.length >= 11
+              ? {
+                  semua: r,
+                  id: parts[0],
+                  tanggal: parts[1],
+                  deadline: parts[2],
+                  namaIg: parts[3],
+                  joki: parts[4],
+                  worker: parts[5],
+                  hargaJoki: parts[6],
+                  gajiWorker: parts[7],
+                  uangMasuk: parts[8],
+                  bayarVia: parts[9],
+                  status: parts[10],
+                }
+              : null;
+          })
+          .filter(Boolean);
+        parsed.sort(
+          (a, b) => parseDateStr(a.tanggal) - parseDateStr(b.tanggal)
+        );
+        const body = document.getElementById("dataBody");
+        body.innerHTML = "";
+        let total = 0;
+        parsed.forEach((item) => {
+          if (
+            filterWorker &&
+            !item.worker.toLowerCase().includes(filterWorker.toLowerCase())
+          )
+            return;
+          total++;
+          const tr = document.createElement("tr");
+          tr.className = "data-row";
+          tr.innerHTML = `<td>${item.id}</td>
+<td>${item.tanggal}</td>
+<td>${item.deadline}</td>
+<td>${escapeHtml(item.namaIg)}</td>
+<td>${escapeHtml(item.joki)}</td>
+<td>${escapeHtml(item.worker)}</td>
+<td>${formatMoney(item.hargaJoki)}</td>
+<td>${formatMoney(item.gajiWorker)}</td>
+<td>${escapeHtml(item.uangMasuk)}</td>
+<td>${escapeHtml(item.bayarVia)}</td>
+<td><span class="status-badge ${ 
+            item.status.toLowerCase().includes("selesai")
+              ? "status-done"
+              : "status-pending"
+          }">${item.status}</span></td>
+<td class="row-actions">
+  <button class="btn secondary" data-id="${ 
+            item.id
+          }" data-action="edit"><svg class="small-icon" viewBox="0 0 24 24" fill="none"><path d="M3 21v-3l11-11 3 3L6 21H3" stroke="currentColor" stroke-width="2"/></svg></button>
+  <button class="btn" data-id="${ 
+            item.id
+          }" data-action="delete"><svg class="small-icon" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6v12a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6" stroke="currentColor" stroke-width="2"/></svg></button>
+</td>`;
+          body.appendChild(tr);
+        });
+        document.getElementById("totalData").textContent = total;
+        document.getElementById("storageInfo").textContent = `${(
+          new Blob([JSON.stringify(loadFiles())]).size / 1024
+        ).toFixed(1)} KB stored`;
+      }
+      function escapeHtml(s) {
+        return (s || "")
+          .toString()
+          .replace(
+            /[&<>"]/g,
+            (m) =>
+              ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+              }[m])
+          );
+      }
+      function formatMoney(v) {
+        if (v === undefined || v === null) return "";
+        const n = Number(v);
+        if (isNaN(n)) return v;
+        return n.toLocaleString("id-ID");
+      }
+      document.getElementById("addBtn").addEventListener("click", () => {
+        const dataId = Math.floor(Math.random() * 100);
+        const tanggal = document.getElementById("tanggal").value || "";
+        const deadline = document.getElementById("deadline").value || "";
+        const namaIg = document.getElementById("namaIg").value || "";
+        const joki = document.getElementById("joki").value || "";
+        const worker = document.getElementById("worker").value || "";
+        const hargaJoki = (document.getElementById("hargaJoki").value || "0")
+          .toString()
+          .replace(/\./g, "")
+          .replace(/,/g, "");
+        const gajiWorker = computeGaji(hargaJoki);
+        const uangMasuk = document.getElementById("uangMasuk").value || "";
+        const bayarVia = document.getElementById("bayarVia").value || "";
+        const statusData =
+          document.getElementById("statusData").value || "Pending";
+        const line = `${dataId}|${tanggal}|${deadline}|${namaIg}|${joki}|${worker}|${hargaJoki}|${gajiWorker}|${uangMasuk}|${bayarVia}|${statusData}`;
+        addDataEntry(line);
+        document.getElementById("tanggal").value = "";
+        document.getElementById("deadline").value = "";
+        document.getElementById("namaIg").value = "";
+        document.getElementById("joki").value = "";
+        document.getElementById("worker").value = "";
+        document.getElementById("hargaJoki").value = "";
+        document.getElementById("uangMasuk").value = "";
+        document.getElementById("bayarVia").value = "";
+      });
+      document.getElementById("exportCsv").addEventListener("click", () => {
+        const files = loadFiles();
+        const rows = files[activeFile] || [];
+        const header =
+          "Nomor,Tanggal,Deadline,Nama IG,Joki,Worker,Harga Joki,Gaji Worker,Uang Masuk,Bayar Via,Status\n";
+        const csv = header + rows.map((r) => r.replace(/\|/g, ",")).join("\n");
+        const blob = new Blob([csv], { type: "text/csv" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = activeFile.replace(".txt", "_export.csv");
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      });
+      document
+        .getElementById("downloadTxt")
+        .addEventListener("click", () => downloadTxt(activeFile));
+      document.getElementById("createFile").addEventListener("click", () => {
+        const name = document.getElementById("newFileName").value.trim();
+        createFile(name);
+        document.getElementById("newFileName").value = "";
+      });
+      document.getElementById("importBtn").addEventListener("click", () => {
+        document.getElementById("fileInput").click();
+      });
+      document.getElementById("fileInput").addEventListener("change", (e) => {
+        const f = e.target.files[0];
+        if (!f) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          const text = reader.result;
+          const lines = text.split(/\r?\n/).filter(Boolean);
+          const name = f.name.endsWith(".txt") ? f.name : f.name + ".txt";
+          const files = loadFiles();
+          files[name] = (files[name] || []).concat(lines);
+          saveFiles(files);
+          activeFile = name;
+          document.getElementById("activeFile").textContent = activeFile;
+          renderFileList();
+          renderData();
+        };
+        reader.readAsText(f, "utf-8");
+      });
+      document.getElementById("copyFileBtn").addEventListener("click", () => {
+        const target = prompt("Nama file tujuan (contoh: Data-Copy.txt)");
+        if (!target) return;
+        const t = target.endsWith(".txt") ? target : target + ".txt";
+        const files = loadFiles();
+        const src = files[activeFile] || [];
+        files[t] = (files[t] || []).concat(src);
+        saveFiles(files);
+        renderFileList();
+        alert("Berhasil copy ke " + t);
+      });
+      document.getElementById("searchBtn").addEventListener("click", () => {
+        const q = document.getElementById("searchInput").value.trim();
+        renderData(q);
+      });
+      document.getElementById("dataBody").addEventListener("click", (e) => {
+        const btn = e.target.closest("button");
+        if (!btn) return;
+        const action = btn.dataset.action;
+        const id = btn.dataset.id;
+        if (action === "delete") {
+          const files = loadFiles();
+          files[activeFile] = (files[activeFile] || []).filter(
+            (r) => !r.startsWith(id + "|")
+          );
+          saveFiles(files);
+          renderData();
+          renderFileList();
+          return;
+        }
+        if (action === "edit") {
+          const files = loadFiles();
+          const rows = files[activeFile] || [];
+          const idx = rows.findIndex((r) => r.startsWith(id + "|"));
+          if (idx === -1) return;
+          const parts = rows[idx].split("|");
+          const field = prompt(
+            "Pilih field index 1-10 untuk edit:\n1Tanggal 2Deadline 3NamaIG 4Joki 5Worker 6Harga 7Gaji 8UangMasuk 9BayarVia 10Status"
+          );
+          const fi = Number(field);
+          if (!fi || fi < 1 || fi > 10) return alert("Index tidak valid");
+          const newVal = prompt(
+            "Masukkan nilai baru untuk field " + fi,
+            parts[fi]
+          );
+          if (newVal === null) return;
+          parts[fi - 1] = newVal;
+          rows[idx] = parts.join("|");
+          files[activeFile] = rows;
+          saveFiles(files);
+          renderData();
+          renderFileList();
+        }
+      });
+      document.getElementById("activeFile").textContent = activeFile;
+      renderFileList();
+      renderData();
+    </script>
+  </body>
+</html>
